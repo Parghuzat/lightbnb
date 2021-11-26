@@ -16,7 +16,7 @@ const pool = new Pool({
 const getUserWithEmail = function(email) {
   return pool
     .query (`SELECT * FROM users WHERE email = $1 `, [email])
-    .then((result) => result.rows)
+    .then((result) => result.rows[0])
     .catch((err) => {
       console.log(err.message);
     });
@@ -31,7 +31,7 @@ exports.getUserWithEmail = getUserWithEmail;
 const getUserWithId = function(id) {
   return pool
     .query (`SELECT * FROM users WHERE id = $1 `, [id])
-    .then((result) => result.rows)
+    .then((result) => result.rows[0])
     .catch((err) => {
       console.log(err.message);
     });
