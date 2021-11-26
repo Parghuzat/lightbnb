@@ -126,7 +126,7 @@ exports.getAllReservations = getAllReservations;
     queryParams.push(options.minimum_rating);
     queryString += `  HAVING avg(property_reviews.rating) >= $${queryParams.length}`;
   }
-  
+
   queryParams.push(limit);
   queryString += `
   ORDER BY cost_per_night
@@ -146,9 +146,22 @@ exports.getAllProperties = getAllProperties;
  * @return {Promise<{}>} A promise to the property.
  */
 const addProperty = function(property) {
-  const propertyId = Object.keys(properties).length + 1;
-  property.id = propertyId;
-  properties[propertyId] = property;
-  return Promise.resolve(property);
+  let queryString = "INSERT INTO properties(";
+  let queryParams = [];
+  let valueString = "VALUES (";
+
+  let keys = Object.keys(property)
+  for(let key in property){
+    queryString += key;
+    queryParams.push(property[key]);
+    valueString += `$${queryParams.length}`
+    if(key !== keys[keys.length - 1]){
+      queryString += ', ';
+      valueString += ', ';
+    }
+  }
+  queryString += ") " + valueString + ") RETURNING *;";
+  console.log(queryString, queryParams);
+  return pool.query(queryString, queryParams).then((res) => res.rows);
 }
 exports.addProperty = addProperty;
